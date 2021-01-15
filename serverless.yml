@@ -1,0 +1,55 @@
+service: thumbbuster
+
+custom:
+  UploadBucket:
+    Ref: TBUploadBucket
+  TransformBucket:
+    Ref: TBTransformBucket
+
+provider:
+  name: aws
+  stage: ${opt:stage, ''}
+  runtime: nodejs12.x
+  profile: serverless-admin
+  region: us-east-2
+  environment:
+    TRANSFORM_BUCKET: ${self:custom.TransformBucket}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource:
+        - "Fn::Join":
+          - ""
+          - - "arn:aws:s3:::"
+            - Ref: TBUploadBucket
+            - "*"
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource:
+        - "Fn::Join":
+          - ""
+          - - "arn:aws:s3:::"
+            - Ref: TBTransformBucket
+            - "*"
+
+functions:
+  upload:
+    handler: handler.handleUpload
+    events:
+      - s3:
+        name: ${self:custom.UploadBucket}
+        event: s3:ObjectCreated:*
+
+resources:
+  Resources:
+    TBUploadBucket:
+      Type: AWS::S3::Bucket
+    TBTransformBucket:
+      Type: AWS::S3::Bucket
+
+plugins:
+  - serverless-plugin-typescript
