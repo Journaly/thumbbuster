@@ -56,6 +56,20 @@ resources:
         BucketName: ${self:custom.transformBucketName}
         AccessControl: PublicRead
 
+    TBTransformBucketPolicy:
+      Type: AWS::S3::BucketPolicy
+      Properties:
+        Bucket:
+          Ref: TBTransformBucket
+        PolicyDocument:
+          Statement:
+            - Sid: PublicReadGetObject
+              Effect: Allow
+              Principal: "*"
+              Action:
+                - "s3:GetObject"
+              Resource: arn:aws:s3:::${self:custom.transformBucketName}/*
+
     PublicDistribution:
       Type: AWS::CloudFront::Distribution
       Properties:
