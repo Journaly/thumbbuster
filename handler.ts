@@ -24,7 +24,8 @@ export const handleUpload: S3Handler = async (event, contex) => {
         Bucket: process.env.TRANSFORM_BUCKET!,
         Key: `${rec.s3.object.key}-${suffix}`,
         Body: transformed,
-        ContentType: "image"
+        ContentType: 'image/jpeg',
+        StorageClass: 'INTELLIGENT_TIERING',
       }).promise()
     }
 
