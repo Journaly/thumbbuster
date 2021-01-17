@@ -13,11 +13,10 @@ provider:
   profile: serverless-admin
   region: us-east-2
   environment:
-    TRANSFORM_BUCKET: ${self:custom.TransformBucket}
+    TRANSFORM_BUCKET: thumbbuster-${opt:stage, ''}-transform-bucket
   iamRoleStatements:
     - Effect: Allow
       Action:
-        - s3:PutObject
         - s3:GetObject
       Resource:
         - "Fn::Join":
@@ -41,15 +40,21 @@ functions:
     handler: handler.handleUpload
     events:
       - s3:
-        name: ${self:custom.UploadBucket}
-        event: s3:ObjectCreated:*
+          bucket: thumbbuster-${opt:stage, ''}-upload-bucket
+          event: s3:ObjectCreated:*
+          existing: true
 
 resources:
   Resources:
     TBUploadBucket:
       Type: AWS::S3::Bucket
+      Properties:
+        BucketName: thumbbuster-${opt:stage, ''}-upload-bucket
+        
     TBTransformBucket:
       Type: AWS::S3::Bucket
+      Properties:
+        BucketName: thumbbuster-${opt:stage, ''}-transform-bucket
 
 plugins:
   - serverless-plugin-typescript
