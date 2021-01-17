@@ -1,19 +1,18 @@
 service: thumbbuster
 
 custom:
-  UploadBucket:
-    Ref: TBUploadBucket
-  TransformBucket:
-    Ref: TBTransformBucket
+  transformBucketName: thumbbuster-${opt:stage, 'dev'}-transform-bucket
+  uploadBucketName: thumbbuster-${opt:stage, 'dev'}-upload-bucket
+  s3OriginId: transform-origin-${opt:stage, 'dev'}
 
 provider:
   name: aws
-  stage: ${opt:stage, ''}
+  stage: ${opt:stage, 'dev'}
   runtime: nodejs12.x
   profile: serverless-admin
   region: us-east-2
   environment:
-    TRANSFORM_BUCKET: thumbbuster-${opt:stage, ''}-transform-bucket
+    TRANSFORM_BUCKET: ${self:custom.transformBucketName}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -40,7 +39,7 @@ functions:
     handler: handler.handleUpload
     events:
       - s3:
-          bucket: thumbbuster-${opt:stage, ''}-upload-bucket
+          bucket: ${self:custom.uploadBucketName}
           event: s3:ObjectCreated:*
           existing: true
 
@@ -49,12 +48,47 @@ resources:
     TBUploadBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: thumbbuster-${opt:stage, ''}-upload-bucket
+        BucketName: ${self:custom.uploadBucketName}
         
     TBTransformBucket:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: thumbbuster-${opt:stage, ''}-transform-bucket
+        BucketName: ${self:custom.transformBucketName}
+        AccessControl: PublicRead
+
+    PublicDistribution:
+      Type: AWS::CloudFront::Distribution
+      Properties:
+        DistributionConfig:
+          Enabled: "true"
+          DefaultCacheBehavior:
+            AllowedMethods:
+            - GET
+            - HEAD
+            MinTTL: "0"
+            MaxTTL: "0"
+            DefaultTTL: "0"
+            TargetOriginId: ${self:custom.s3OriginId}
+            ForwardedValues:
+              QueryString: 'true'
+              Cookies:
+                Forward: all
+            ViewerProtocolPolicy: redirect-to-https
+          CacheBehaviors:
+          - AllowedMethods:
+            - GET
+            - HEAD
+            TargetOriginId: ${self:custom.s3OriginId}
+            ForwardedValues:
+              QueryString: "false"
+            ViewerProtocolPolicy: https-only
+            DefaultTTL: 86400
+            PathPattern: '*'
+          Origins:
+            - DomainName: ${self:custom.transformBucketName}.s3.${self:provider.region}.amazonaws.com
+              Id: ${self:custom.s3OriginId}
+              S3OriginConfig:
+                OriginAccessIdentity: ''
 
 plugins:
   - serverless-plugin-typescript
