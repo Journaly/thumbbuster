@@ -17,6 +17,7 @@ export const handleUpload: S3Handler = async (event, contex) => {
     const t = async (size: number, suffix: string) => {
       const transformed = await input.clone()
         .resize(size, null, { withoutEnlargement: true })
+        .jpeg({ quality: 90 })
         .toBuffer()
 
       return s3.putObject({
