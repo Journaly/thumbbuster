@@ -49,6 +49,12 @@ resources:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.uploadBucketName}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+                - PUT
+              AllowedOrigins:
+                - '*'
         
     TBTransformBucket:
       Type: AWS::S3::Bucket
