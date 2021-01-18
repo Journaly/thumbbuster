@@ -55,12 +55,22 @@ resources:
                 - PUT
               AllowedOrigins:
                 - '*'
+              AllowedHeaders:
+                - '*'
         
     TBTransformBucket:
       Type: AWS::S3::Bucket
       Properties:
         BucketName: ${self:custom.transformBucketName}
         AccessControl: PublicRead
+        CorsConfiguration:
+          CorsRules:
+            - AllowedMethods:
+                - HEAD
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
 
     TBTransformBucketPolicy:
       Type: AWS::S3::BucketPolicy
