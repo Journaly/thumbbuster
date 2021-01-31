@@ -35,13 +35,25 @@ provider:
             - "*"
 
 functions:
-  upload:
-    handler: handler.handleUpload
+  uploadPostImage:
+    handler: handler.handlePostImage
     events:
       - s3:
           bucket: ${self:custom.uploadBucketName}
           event: s3:ObjectCreated:*
           existing: true
+          rules:
+            - prefix: post-image/
+
+  uploadAvatarImage:
+    handler: handler.handleAvatarImage
+    events:
+      - s3:
+          bucket: ${self:custom.uploadBucketName}
+          event: s3:ObjectCreated:*
+          existing: true
+          rules:
+            - prefix: avatar-image/
 
 resources:
   Resources:
@@ -54,7 +66,7 @@ resources:
             - AllowedMethods:
                 - PUT
               AllowedOrigins:
-                - '*'
+                - ${file(./config/${opt:stage, 'dev'}.json):ALLOWED_ORIGIN}
               AllowedHeaders:
                 - '*'
         
