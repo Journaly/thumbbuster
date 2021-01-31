@@ -54,7 +54,7 @@ resources:
             - AllowedMethods:
                 - PUT
               AllowedOrigins:
-                - '*'
+                - ${file(./config/${opt:stage, 'dev'}.json):ALLOWED_ORIGIN}
               AllowedHeaders:
                 - '*'
         
