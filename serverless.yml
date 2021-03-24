@@ -45,6 +45,16 @@ functions:
           rules:
             - prefix: post-image/
 
+  uploadInlinePostImage:
+    handler: handler.handleInlinePostImage
+    events:
+      - s3:
+          bucket: ${self:custom.uploadBucketName}
+          event: s3:ObjectCreated:*
+          existing: true
+          rules:
+            - prefix: inline-post-image/
+
   uploadAvatarImage:
     handler: handler.handleAvatarImage
     events:

@@ -62,6 +62,18 @@ export const handlePostImage = createHandler({
   ]
 })
 
+export const handleInlinePostImage = createHandler({
+  transforms: [
+    {
+      name: 'default',
+      transform: (input) => (input
+        .resize(1000, 1000, { fit: 'inside', withoutEnlargement: true })
+        .jpeg({ quality: 90 })
+        .toBuffer())
+    },
+  ]
+})
+
 export const handleAvatarImage = createHandler({
   transforms: [
     {
