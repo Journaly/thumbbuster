@@ -1,3 +1,3 @@
 {
-  "ALLOWED_ORIGIN": "https://journaly.com"
+  "ALLOWED_ORIGINS": ["https://journaly.com"]
 }

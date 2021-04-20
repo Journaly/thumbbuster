@@ -1,3 +1,6 @@
 {
-  "ALLOWED_ORIGIN": "https://*.journaly.vercel.app"
+  "ALLOWED_ORIGINS": [
+    "https://*.journaly.vercel.app",
+    "https://stage.journaly.com"
+  ]
 }
