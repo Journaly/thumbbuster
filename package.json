@@ -1,6 +1,9 @@
 {
   "name": "thumbbuster",
   "version": "1.0.0",
+  "engines": {
+    "node": "16.x"
+  },
   "description": "Nail those thumbs!",
   "main": "index.js",
   "scripts": {
